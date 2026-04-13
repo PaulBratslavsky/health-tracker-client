@@ -4283,10 +4283,12 @@ __metadata:
     "@vitejs/plugin-react": "npm:^6.0.1"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
+    defu: "npm:^6.1.7"
     jsdom: "npm:^28.1.0"
     ky: "npm:^2.0.0"
     lucide-react: "npm:^1.8.0"
     next-themes: "npm:^0.4.6"
+    nitro: "npm:^3.0.260311-beta"
     radix-ui: "npm:^1.4.3"
     react: "npm:^19.2.0"
     react-dom: "npm:^19.2.0"
@@ -4356,6 +4358,13 @@ __metadata:
   version: 14.0.3
   resolution: "commander@npm:14.0.3"
   checksum: 10c0/755652564bbf56ff2ff083313912b326450d3f8d8c85f4b71416539c9a05c3c67dbd206821ca72635bf6b160e2afdefcb458e86b317827d5cb333b69ce7f1a24
+  languageName: node
+  linkType: hard
+
+"consola@npm:^3.4.2":
+  version: 3.4.2
+  resolution: "consola@npm:3.4.2"
+  checksum: 10c0/7cebe57ecf646ba74b300bcce23bff43034ed6fbec9f7e39c27cee1dc00df8a21cd336b466ad32e304ea70fba04ec9e890c200270de9a526ce021ba8a7e4c11a
   languageName: node
   linkType: hard
 
@@ -4443,6 +4452,18 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
+  languageName: node
+  linkType: hard
+
+"crossws@npm:^0.4.4":
+  version: 0.4.5
+  resolution: "crossws@npm:0.4.5"
+  peerDependencies:
+    srvx: ">=0.11.5"
+  peerDependenciesMeta:
+    srvx:
+      optional: true
+  checksum: 10c0/e90fe3f863a76559e67e8c3e978432aa2670ad0606daadf7ab88a54b87841dff200633e979471d5c428c6d0af68a2fdc5715bccca8e1d7edc43cff0ce6b29e2c
   languageName: node
   linkType: hard
 
@@ -4621,6 +4642,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"db0@npm:^0.3.4":
+  version: 0.3.4
+  resolution: "db0@npm:0.3.4"
+  peerDependencies:
+    "@electric-sql/pglite": "*"
+    "@libsql/client": "*"
+    better-sqlite3: "*"
+    drizzle-orm: "*"
+    mysql2: "*"
+    sqlite3: "*"
+  peerDependenciesMeta:
+    "@electric-sql/pglite":
+      optional: true
+    "@libsql/client":
+      optional: true
+    better-sqlite3:
+      optional: true
+    drizzle-orm:
+      optional: true
+    mysql2:
+      optional: true
+    sqlite3:
+      optional: true
+  checksum: 10c0/cd069a39783b8a160180ba4ae1a9832cd063e4f5d269442c7e7dd3e5713965e01f4d11272d5c79699e9723f4c79ba67159e52ec34b4a61e7349609865f20a368
+  languageName: node
+  linkType: hard
+
 "debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.4, debug@npm:^4.4.0, debug@npm:^4.4.1, debug@npm:^4.4.3":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
@@ -4706,6 +4754,13 @@ __metadata:
   version: 3.0.0
   resolution: "define-lazy-prop@npm:3.0.0"
   checksum: 10c0/5ab0b2bf3fa58b3a443140bbd4cd3db1f91b985cc8a246d330b9ac3fc0b6a325a6d82bddc0b055123d745b3f9931afeea74a5ec545439a1630b9c8512b0eeb49
+  languageName: node
+  linkType: hard
+
+"defu@npm:^6.1.7":
+  version: 6.1.7
+  resolution: "defu@npm:6.1.7"
+  checksum: 10c0/e6635388103c8be3c574ac31302f6930e5e6eeedba32cb1b30cf993c7d9fb571aec2485446dfa23bfa63e55e66156fe109027a9695db82a50f931e91e8d4bedb
   languageName: node
   linkType: hard
 
@@ -4899,6 +4954,28 @@ __metadata:
   version: 2.2.1
   resolution: "env-paths@npm:2.2.1"
   checksum: 10c0/285325677bf00e30845e330eec32894f5105529db97496ee3f598478e50f008c5352a41a30e5e72ec9de8a542b5a570b85699cd63bd2bc646dbcb9f311d83bc4
+  languageName: node
+  linkType: hard
+
+"env-runner@npm:^0.1.6":
+  version: 0.1.7
+  resolution: "env-runner@npm:0.1.7"
+  dependencies:
+    crossws: "npm:^0.4.4"
+    exsolve: "npm:^1.0.8"
+    httpxy: "npm:^0.5.0"
+    srvx: "npm:^0.11.13"
+  peerDependencies:
+    "@netlify/runtime": ^4
+    miniflare: ^4.20260317.3
+  peerDependenciesMeta:
+    "@netlify/runtime":
+      optional: true
+    miniflare:
+      optional: true
+  bin:
+    env-runner: dist/cli.mjs
+  checksum: 10c0/0effa758b5cd54c82595790ba874c7f358f6778f82f917ca3c0eedcaf5ae05be228fea350e9d685140a94b8ed86410caa6e9ca1513049a9c141742b94e6dbc98
   languageName: node
   linkType: hard
 
@@ -5203,7 +5280,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"exsolve@npm:^1.0.7":
+"exsolve@npm:^1.0.7, exsolve@npm:^1.0.8":
   version: 1.0.8
   resolution: "exsolve@npm:1.0.8"
   checksum: 10c0/65e44ae05bd4a4a5d87cfdbbd6b8f24389282cf9f85fa5feb17ca87ad3f354877e6af4cd99e02fc29044174891f82d1d68c77f69234410eb8f163530e6278c67
@@ -5525,7 +5602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"h3-v2@npm:h3@2.0.1-rc.20":
+"h3-v2@npm:h3@2.0.1-rc.20, h3@npm:^2.0.1-rc.16":
   version: 2.0.1-rc.20
   resolution: "h3@npm:2.0.1-rc.20"
   dependencies:
@@ -5569,6 +5646,13 @@ __metadata:
   version: 4.12.12
   resolution: "hono@npm:4.12.12"
   checksum: 10c0/7e514cac7f0fde53a93b5344605a11bc944c55c7b68e586ab722269a60c2d78e81b91c298e934b232d44aa8fcbfd2584b7cd7e01fb3f0edaaba0597a584b2ead
+  languageName: node
+  linkType: hard
+
+"hookable@npm:^6.0.1":
+  version: 6.1.0
+  resolution: "hookable@npm:6.1.0"
+  checksum: 10c0/5dc4993277ae3eff89a014f42a56498571a0d143cbb2717ed61cfdb0173b8bf98332ed1e1e25eec58edb5b96ebc07e4cedc16fd6bcd4fff6be058f38bec33fb3
   languageName: node
   linkType: hard
 
@@ -5630,6 +5714,13 @@ __metadata:
     agent-base: "npm:^7.1.2"
     debug: "npm:4"
   checksum: 10c0/f729219bc735edb621fa30e6e84e60ee5d00802b8247aac0d7b79b0bd6d4b3294737a337b93b86a0bd9e68099d031858a39260c976dc14cdbba238ba1f8779ac
+  languageName: node
+  linkType: hard
+
+"httpxy@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "httpxy@npm:0.5.0"
+  checksum: 10c0/99a237918ac8cf55cea9623aa4da9fba5e0534bdadaad57fe5b83b3eebcc65eb91bdc35b3c5dabde549a8b133c7a4ced8723ceca64903d737a2ec251f5fcfa02
   languageName: node
   linkType: hard
 
@@ -6523,6 +6614,60 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nf3@npm:^0.3.11":
+  version: 0.3.16
+  resolution: "nf3@npm:0.3.16"
+  checksum: 10c0/e687395546cf33a4071942371d6e245d77cb4bf639af7a5a5e1118b294593187970d640291c404c6cc6ce362b11a598cbd815381cc63cd3023f8169a9ecf6ade
+  languageName: node
+  linkType: hard
+
+"nitro@npm:^3.0.260311-beta":
+  version: 3.0.260311-beta
+  resolution: "nitro@npm:3.0.260311-beta"
+  dependencies:
+    consola: "npm:^3.4.2"
+    crossws: "npm:^0.4.4"
+    db0: "npm:^0.3.4"
+    env-runner: "npm:^0.1.6"
+    h3: "npm:^2.0.1-rc.16"
+    hookable: "npm:^6.0.1"
+    nf3: "npm:^0.3.11"
+    ocache: "npm:^0.1.2"
+    ofetch: "npm:^2.0.0-alpha.3"
+    ohash: "npm:^2.0.11"
+    rolldown: "npm:^1.0.0-rc.8"
+    srvx: "npm:^0.11.9"
+    unenv: "npm:^2.0.0-rc.24"
+    unstorage: "npm:^2.0.0-alpha.6"
+  peerDependencies:
+    dotenv: "*"
+    giget: "*"
+    jiti: ^2.6.1
+    rollup: ^4.59.0
+    vite: ^7 || ^8 || >=8.0.0-0
+    xml2js: ^0.6.2
+    zephyr-agent: ^0.1.15
+  peerDependenciesMeta:
+    dotenv:
+      optional: true
+    giget:
+      optional: true
+    jiti:
+      optional: true
+    rollup:
+      optional: true
+    vite:
+      optional: true
+    xml2js:
+      optional: true
+    zephyr-agent:
+      optional: true
+  bin:
+    nitro: dist/cli/index.mjs
+  checksum: 10c0/a61a071abf69fe5e2d4c6403d1982f41cce2163718fd1c1d05c1cae8aca78fcce3b22c4718b8e4a3cafb8d41008bdcb649d4006c07506feda14a69f72629d812
+  languageName: node
+  linkType: hard
+
 "node-domexception@npm:^1.0.0":
   version: 1.0.0
   resolution: "node-domexception@npm:1.0.0"
@@ -6632,6 +6777,29 @@ __metadata:
   version: 1.1.33
   resolution: "object-treeify@npm:1.1.33"
   checksum: 10c0/5b735ac552200bf14f9892ce58295303e8d15a8cc7a0fd4fe6ff99923ab0c196fb70a870ab2a0eefc6820c4acb49e614b88c72d344b9c6bd22584a3efbd386fe
+  languageName: node
+  linkType: hard
+
+"ocache@npm:^0.1.2":
+  version: 0.1.4
+  resolution: "ocache@npm:0.1.4"
+  dependencies:
+    ohash: "npm:^2.0.11"
+  checksum: 10c0/2530249aa6e7a557d8a93b2ff4506817f484f4780310f5680d4cd7464dca634bebe9fec25434426b4cc1b35343bc166b00a15f04f177d15db20606a32ee837e5
+  languageName: node
+  linkType: hard
+
+"ofetch@npm:^2.0.0-alpha.3":
+  version: 2.0.0-alpha.3
+  resolution: "ofetch@npm:2.0.0-alpha.3"
+  checksum: 10c0/d2b2529980d49c33a647c54cc37fde7a55601ed81c1ec53863c323d292704c84811a902df9840aeb09eb917eadc82996c15d25013002dde84dcdd6f98bb21d0d
+  languageName: node
+  linkType: hard
+
+"ohash@npm:^2.0.11":
+  version: 2.0.11
+  resolution: "ohash@npm:2.0.11"
+  checksum: 10c0/d07c8d79cc26da082c1a7c8d5b56c399dd4ed3b2bd069fcae6bae78c99a9bcc3ad813b1e1f49ca2f335292846d689c6141a762cf078727d2302a33d414e69c79
   languageName: node
   linkType: hard
 
@@ -7315,7 +7483,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rolldown@npm:1.0.0-rc.15":
+"rolldown@npm:1.0.0-rc.15, rolldown@npm:^1.0.0-rc.8":
   version: 1.0.0-rc.15
   resolution: "rolldown@npm:1.0.0-rc.15"
   dependencies:
@@ -8205,6 +8373,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"unenv@npm:^2.0.0-rc.24":
+  version: 2.0.0-rc.24
+  resolution: "unenv@npm:2.0.0-rc.24"
+  dependencies:
+    pathe: "npm:^2.0.3"
+  checksum: 10c0/e8556b4287fcf647f23db790eea2782cc79f182370718680e3aba4753d5fb7177abf5d6df489c8f74f7e3ad6cd554b8623cc01caf3e6f2d5548e69178adb1691
+  languageName: node
+  linkType: hard
+
 "unicorn-magic@npm:^0.3.0":
   version: 0.3.0
   resolution: "unicorn-magic@npm:0.3.0"
@@ -8235,6 +8412,84 @@ __metadata:
     picomatch: "npm:^4.0.3"
     webpack-virtual-modules: "npm:^0.6.2"
   checksum: 10c0/273c1eab0eca4470c7317428689295c31dbe8ab0b306504de9f03cd20c156debb4131bef24b27ac615862958c5dd950a3951d26c0723ea774652ab3624149cff
+  languageName: node
+  linkType: hard
+
+"unstorage@npm:^2.0.0-alpha.6":
+  version: 2.0.0-alpha.7
+  resolution: "unstorage@npm:2.0.0-alpha.7"
+  peerDependencies:
+    "@azure/app-configuration": ^1.11.0
+    "@azure/cosmos": ^4.9.1
+    "@azure/data-tables": ^13.3.2
+    "@azure/identity": ^4.13.0
+    "@azure/keyvault-secrets": ^4.10.0
+    "@azure/storage-blob": ^12.31.0
+    "@capacitor/preferences": ^6 || ^7 || ^8
+    "@deno/kv": ">=0.13.0"
+    "@netlify/blobs": ^6.5.0 || ^7.0.0 || ^8.1.0 || ^9.0.0 || ^10.0.0
+    "@planetscale/database": ^1.19.0
+    "@upstash/redis": ^1.36.2
+    "@vercel/blob": ">=0.27.3"
+    "@vercel/functions": ^2.2.12 || ^3.0.0
+    "@vercel/kv": ^1.0.1
+    aws4fetch: ^1.0.20
+    chokidar: ^4 || ^5
+    db0: ">=0.3.4"
+    idb-keyval: ^6.2.2
+    ioredis: ^5.9.3
+    lru-cache: ^11.2.6
+    mongodb: ^6 || ^7
+    ofetch: "*"
+    uploadthing: ^7.7.4
+  peerDependenciesMeta:
+    "@azure/app-configuration":
+      optional: true
+    "@azure/cosmos":
+      optional: true
+    "@azure/data-tables":
+      optional: true
+    "@azure/identity":
+      optional: true
+    "@azure/keyvault-secrets":
+      optional: true
+    "@azure/storage-blob":
+      optional: true
+    "@capacitor/preferences":
+      optional: true
+    "@deno/kv":
+      optional: true
+    "@netlify/blobs":
+      optional: true
+    "@planetscale/database":
+      optional: true
+    "@upstash/redis":
+      optional: true
+    "@vercel/blob":
+      optional: true
+    "@vercel/functions":
+      optional: true
+    "@vercel/kv":
+      optional: true
+    aws4fetch:
+      optional: true
+    chokidar:
+      optional: true
+    db0:
+      optional: true
+    idb-keyval:
+      optional: true
+    ioredis:
+      optional: true
+    lru-cache:
+      optional: true
+    mongodb:
+      optional: true
+    ofetch:
+      optional: true
+    uploadthing:
+      optional: true
+  checksum: 10c0/e0cd9896b27f3c9bc128333ef551a46d401843a4d93ad02dcffd9589d54c2c2b73e2f51440f02fda51c7941d31868ca0a69fa2e7e1f0f9b5489983814c8e9be6
   languageName: node
   linkType: hard
 
