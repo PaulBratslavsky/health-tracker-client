@@ -14,6 +14,13 @@ export const computeWhtr = (waistCm: number, heightCm: number) =>
 
 export type WhtrBand = 'green' | 'yellow' | 'red';
 
+// NICE 2022 WHtR bands.
+//   0.40 – 0.49  → healthy, not increased risk → "OK"
+//   0.50 – 0.59  → increased central adiposity → "Take care"
+//   0.60 or more → high central adiposity      → "Take action"
+// WHtR < 0.40 is below the healthy range (too low); we fold it into "Take
+// care" since the three-band UI collapses NICE's top/bottom outliers.
+// Source: https://en.wikipedia.org/wiki/Waist-to-height_ratio#NICE_guidance
 export const bandFor = (whtr: number): WhtrBand => {
   if (whtr >= 0.4 && whtr < 0.5) return 'green';
   if (whtr >= 0.6) return 'red';
@@ -21,9 +28,9 @@ export const bandFor = (whtr: number): WhtrBand => {
 };
 
 export const BAND_LABEL: Record<WhtrBand, string> = {
-  green: 'Healthy zone',
-  yellow: 'Room to improve',
-  red: 'Time for action',
+  green: 'Healthy',
+  yellow: 'Take care',
+  red: 'Take action',
 };
 
 // Pastel pill surfaces — used for the small "Healthy zone" / etc. badge.

@@ -31,9 +31,9 @@ function About() {
           body="Measure waist with a soft tape at the navel. Divide by height. That's your WHtR. Lower is healthier. Under 0.5 is the target."
         />
         <Feature
-          kicker="Three zones"
-          title="Green / Yellow / Red"
-          body="0.40 – 0.49 is the healthy zone. 0.50 – 0.59 is room to improve. 0.60+ means it's time for action. Below 0.40 is too low and worth attention too."
+          kicker="NICE 2022 bands"
+          title="Healthy / Take care / Take action"
+          body="0.40 – 0.49 is the healthy range (no increased risk). 0.50 – 0.59 means increased central adiposity — take care. 0.60 or more means high central adiposity — take action. Under 0.40 is below the healthy range and also warrants attention."
         />
         <Feature
           kicker="No hosted content"
