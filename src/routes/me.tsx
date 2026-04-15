@@ -132,13 +132,20 @@ function MyHistoryPage() {
               )}
             </p>
           </div>
-          <div className="flex flex-shrink-0 gap-2">
+          <div className="flex flex-shrink-0 flex-wrap gap-2">
             <Button
               variant="outline"
               onClick={() => setEditing((v) => !v)}
               className="h-9 rounded-full border-[var(--line)] bg-[var(--card)] px-4 text-[13px] hover:bg-[var(--bg-subtle)]"
             >
               {editing ? 'Close' : 'Edit profile'}
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-9 rounded-full border-[var(--line)] bg-[var(--card)] px-4 text-[13px] hover:bg-[var(--bg-subtle)]"
+            >
+              <Link to="/fast">Fast</Link>
             </Button>
             <Button
               asChild

@@ -4,8 +4,8 @@
 // and anywhere else we display or gate on tier. Never inline the check.
 
 export type ProfileTierFields = {
-  tier: 'free' | 'premium' | null | undefined;
-  premiumUntil: string | null | undefined;
+  tier?: 'free' | 'premium' | null;
+  premiumUntil?: string | null;
 };
 
 /**

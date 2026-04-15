@@ -60,6 +60,13 @@ export default function Header() {
                 New post
               </Link>
               <Link
+                to="/fast"
+                className="nav-link text-sm"
+                activeProps={{ className: 'nav-link is-active text-sm' }}
+              >
+                Fast
+              </Link>
+              <Link
                 to="/me"
                 className="nav-link text-sm"
                 activeProps={{ className: 'nav-link is-active text-sm' }}

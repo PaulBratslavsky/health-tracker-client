@@ -15,6 +15,7 @@ import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as NewPostRouteImport } from './routes/new-post'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as FeedRouteImport } from './routes/feed'
+import { Route as FastRouteImport } from './routes/fast'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostDocumentIdRouteImport } from './routes/post.$documentId'
@@ -49,6 +50,11 @@ const FeedRoute = FeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FastRoute = FastRouteImport.update({
+  id: '/fast',
+  path: '/fast',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -68,6 +74,7 @@ const PostDocumentIdRoute = PostDocumentIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fast': typeof FastRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fast': typeof FastRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/fast': typeof FastRoute
   '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/fast'
     | '/feed'
     | '/me'
     | '/new-post'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/fast'
     | '/feed'
     | '/me'
     | '/new-post'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/fast'
     | '/feed'
     | '/me'
     | '/new-post'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  FastRoute: typeof FastRoute
   FeedRoute: typeof FeedRoute
   MeRoute: typeof MeRoute
   NewPostRoute: typeof NewPostRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fast': {
+      id: '/fast'
+      path: '/fast'
+      fullPath: '/fast'
+      preLoaderRoute: typeof FastRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  FastRoute: FastRoute,
   FeedRoute: FeedRoute,
   MeRoute: MeRoute,
   NewPostRoute: NewPostRoute,
