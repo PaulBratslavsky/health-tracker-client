@@ -151,8 +151,16 @@ export async function fetchMyMeasurementsService(
     }));
 }
 
-export const strapiAssetUrl = (relative: string | null | undefined) =>
-  relative ? `${STRAPI_URL}${relative}` : null;
+export const strapiAssetUrl = (path: string | null | undefined) => {
+  if (!path) return null;
+  // Strapi Cloud's media CDN returns absolute URLs; local upload provider
+  // returns paths like `/uploads/...`. Only prepend the API origin for the
+  // relative case. Also pass through data: URIs and protocol-relative URLs.
+  if (path.startsWith('data:') || path.startsWith('http') || path.startsWith('//')) {
+    return path;
+  }
+  return `${STRAPI_URL}${path}`;
+};
 
 export type CreatePostInput =
   | {
