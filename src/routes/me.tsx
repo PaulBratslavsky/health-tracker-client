@@ -156,6 +156,7 @@ function MyHistoryPage() {
                 displayName: profile.displayName,
                 bio: profile.bio,
                 heightCm: profile.heightCm,
+                isPublic: profile.isPublic ?? false,
               }}
               onDone={() => setEditing(false)}
               onCancel={() => setEditing(false)}

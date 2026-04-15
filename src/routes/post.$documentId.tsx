@@ -48,7 +48,7 @@ function SinglePostPage() {
             variant="outline"
             className="h-10 rounded-full border-[var(--line)] bg-[var(--card)] px-5 text-sm hover:bg-[var(--bg-subtle)]"
           >
-            <Link to="/">Back to feed</Link>
+            <Link to="/feed">Back to feed</Link>
           </Button>
         </div>
       </div>
@@ -73,7 +73,7 @@ function NotFoundPost() {
           asChild
           className="mt-6 h-10 rounded-full bg-[var(--ink)] px-5 text-sm hover:bg-[var(--ink-soft)]"
         >
-          <Link to="/">Back to feed</Link>
+          <Link to="/feed">Back to feed</Link>
         </Button>
       </div>
     </main>

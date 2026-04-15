@@ -166,6 +166,7 @@ export const ProfileUpdateInputSchema = z.object({
   heightCm: z.number().int().min(80).max(260).optional(),
   bio: z.string().max(280).optional(),
   displayName: z.string().min(2).max(40).optional(),
+  isPublic: z.boolean().optional(),
 });
 
 export const ProfileEditFormSchema = z
@@ -177,11 +178,13 @@ export const ProfileEditFormSchema = z
       .positive('Must be a positive number')
       .max(300, 'Too large'),
     unit: z.enum(['cm', 'in']),
+    isPublic: z.boolean(),
   })
-  .transform(({ displayName, bio, height, unit }) => ({
+  .transform(({ displayName, bio, height, unit, isPublic }) => ({
     displayName: displayName.trim(),
     bio: bio.trim(),
     heightCm: Math.round(unit === 'in' ? cmFromIn(height) : height),
+    isPublic,
   }));
 
 export type ProfileEditFormValues = {
@@ -189,4 +192,5 @@ export type ProfileEditFormValues = {
   bio: string;
   height: number | '';
   unit: 'cm' | 'in';
+  isPublic: boolean;
 };

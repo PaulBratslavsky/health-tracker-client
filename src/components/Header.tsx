@@ -44,7 +44,7 @@ export default function Header() {
         {/* Desktop nav — hidden on mobile; mobile uses the bottom nav */}
         <div className="ml-auto hidden items-center gap-5 md:flex">
           <Link
-            to="/"
+            to="/feed"
             className="nav-link text-sm"
             activeProps={{ className: 'nav-link is-active text-sm' }}
           >

@@ -39,7 +39,7 @@ export default function Footer() {
               Product
             </span>
             <Link
-              to="/"
+              to="/feed"
               className="text-[var(--ink-soft)] no-underline hover:text-[var(--ink)]"
             >
               Feed

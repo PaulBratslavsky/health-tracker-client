@@ -8,6 +8,7 @@ import {
   fetchMyMeasurementsService,
   fetchMyPostsService,
   fetchPostByDocumentIdService,
+  fetchPublicFeedService,
   uploadImageBase64Service,
   type CreatePostInput,
   type CreatePostResult,
@@ -91,6 +92,16 @@ export const createPost = createServerFn({ method: 'POST' })
       return await createPostService(jwt, { ...rest, imageId } as CreatePostInput);
     }
     return await createPostService(jwt, data);
+  });
+
+const PublicFeedSchema = z.object({
+  limit: z.number().int().min(1).max(12).default(3),
+});
+
+export const getPublicFeed = createServerFn({ method: 'GET' })
+  .inputValidator((data: { limit?: number }) => PublicFeedSchema.parse(data))
+  .handler(async ({ data }): Promise<StrapiPost[]> => {
+    return await fetchPublicFeedService(data.limit);
   });
 
 export const deletePost = createServerFn({ method: 'POST' })

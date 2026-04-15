@@ -70,6 +70,7 @@ export type StrapiUserMe = {
     tier?: 'free' | 'premium' | null;
     premiumSince?: string | null;
     premiumUntil?: string | null;
+    isPublic?: boolean | null;
   } | null;
 };
 

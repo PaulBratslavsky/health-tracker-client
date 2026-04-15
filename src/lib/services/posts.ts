@@ -42,21 +42,33 @@ export type StrapiPost = {
   } | null;
 };
 
-const FEED_QUERY = [
-  'populate%5Bauthor%5D%5Bpopulate%5D=avatar',
-  'populate%5Bimage%5D=true',
-  'filters%5Bstatus%5D%5B%24eq%5D=visible',
-  'sort=createdAt:desc',
-  'pagination%5BpageSize%5D=20',
-].join('&');
+function buildFeedQuery(pageSize: number): string {
+  return [
+    'populate%5Bauthor%5D%5Bpopulate%5D=avatar',
+    'populate%5Bimage%5D=true',
+    'filters%5Bstatus%5D%5B%24eq%5D=visible',
+    'sort=createdAt:desc',
+    `pagination%5BpageSize%5D=${pageSize}`,
+  ].join('&');
+}
 
 export async function fetchFeedService(jwt?: string): Promise<StrapiPost[]> {
   const headers: Record<string, string> = {};
   if (jwt) headers.Authorization = `Bearer ${jwt}`;
 
-  const res = await fetch(`${STRAPI_URL}/api/posts?${FEED_QUERY}`, { headers });
+  const res = await fetch(`${STRAPI_URL}/api/posts?${buildFeedQuery(20)}`, { headers });
   if (!res.ok) return [];
 
+  const json = (await res.json()) as { data?: StrapiPost[] };
+  return json.data ?? [];
+}
+
+// Unauthenticated variant for the landing-page preview. The Strapi document
+// service middleware filters these results to only posts from profiles with
+// `isPublic === true`, so no JWT is needed (and intentionally none is sent).
+export async function fetchPublicFeedService(limit = 3): Promise<StrapiPost[]> {
+  const res = await fetch(`${STRAPI_URL}/api/posts?${buildFeedQuery(limit)}`);
+  if (!res.ok) return [];
   const json = (await res.json()) as { data?: StrapiPost[] };
   return json.data ?? [];
 }
@@ -150,6 +162,7 @@ export async function fetchMyMeasurementsService(
       heightSnapshotCm: p.heightSnapshotCm as number,
     }));
 }
+
 
 export const strapiAssetUrl = (path: string | null | undefined) => {
   if (!path) return null;
@@ -347,6 +360,7 @@ export type ProfileUpdateInput = {
   heightCm?: number;
   bio?: string;
   displayName?: string;
+  isPublic?: boolean;
 };
 
 export type ProfileUpdateResult =

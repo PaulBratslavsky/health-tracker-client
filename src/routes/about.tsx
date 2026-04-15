@@ -69,7 +69,7 @@ function About() {
           variant="outline"
           className="h-11 rounded-full border-[var(--line)] bg-[var(--card)] px-6 text-sm font-medium text-[var(--ink)] hover:bg-[var(--bg-subtle)]"
         >
-          <Link to="/">See the feed</Link>
+          <Link to="/feed">See the feed</Link>
         </Button>
       </div>
     </main>

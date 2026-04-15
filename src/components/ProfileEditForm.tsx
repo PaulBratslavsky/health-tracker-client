@@ -17,12 +17,13 @@ type Props = {
     displayName: string;
     bio: string | null;
     heightCm: number | null;
+    isPublic: boolean;
   };
   onDone: () => void;
   onCancel: () => void;
 };
 
-export function ProfileEditForm({ profileDocumentId, initial, onDone, onCancel }: Props) {
+export function ProfileEditForm({ profileDocumentId, initial, onDone, onCancel }: Readonly<Props>) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -32,8 +33,12 @@ export function ProfileEditForm({ profileDocumentId, initial, onDone, onCancel }
       bio: initial.bio ?? '',
       height: (initial.heightCm ?? '') as number | '',
       unit: 'cm' as 'cm' | 'in',
+      isPublic: initial.isPublic,
     } satisfies ProfileEditFormValues,
-    validators: { onChange: ProfileEditFormSchema },
+    // Cast: the transform schema's input has `unknown` height (z.coerce),
+    // which conflicts with the form's `number | ''`. Submit-time safeParse is
+    // the real validation gate — this is only for live UX hints.
+    validators: { onChange: ProfileEditFormSchema as never },
     onSubmit: async ({ value }) => {
       setServerError(null);
       const parsed = ProfileEditFormSchema.safeParse(value);
@@ -47,6 +52,7 @@ export function ProfileEditForm({ profileDocumentId, initial, onDone, onCancel }
           displayName: parsed.data.displayName,
           bio: parsed.data.bio,
           heightCm: parsed.data.heightCm,
+          isPublic: parsed.data.isPublic,
         },
       });
       if (result.success) {
@@ -138,6 +144,55 @@ export function ProfileEditForm({ profileDocumentId, initial, onDone, onCancel }
         Editing your height does not change historical posts — each post remembers the height at
         the time it was created.
       </p>
+
+      <form.Field name="isPublic">
+        {(field) => {
+          const isPublic = field.state.value;
+          return (
+            <div className="flex items-start justify-between gap-4 rounded-xl border border-(--line) bg-(--bg-subtle) px-4 py-3">
+              <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                <Label className="text-sm font-medium text-foreground">Public profile</Label>
+                <span className="group relative inline-flex">
+                  <button
+                    type="button"
+                    aria-label="What does public profile mean?"
+                    className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-(--line-strong) text-[0.6rem] font-semibold text-(--ink-muted) transition hover:bg-card"
+                  >
+                    ?
+                  </button>
+                  <span
+                    role="tooltip"
+                    className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 w-64 -translate-x-1/2 rounded-lg border border-(--line) bg-card px-3 py-2 text-[0.7rem] leading-snug text-(--ink-soft) opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+                  >
+                    <strong className="font-semibold text-(--ink)">Public</strong> — your posts
+                    appear on the landing page and in the feed for anyone, signed in or not.
+                    <br />
+                    <strong className="font-semibold text-(--ink)">Private</strong> — your posts
+                    only show to people who are signed in.
+                  </span>
+                </span>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isPublic}
+                aria-label="Public profile"
+                onClick={() => field.handleChange(!isPublic)}
+                disabled={form.state.isSubmitting}
+                className={`relative inline-flex h-6 w-11 flex-none items-center rounded-full border border-(--line) transition-colors ${
+                  isPublic ? 'bg-(--ink)' : 'bg-card'
+                } disabled:opacity-50`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                    isPublic ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          );
+        }}
+      </form.Field>
 
       {serverError && (
         <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { DeletePostDialog } from '#/components/DeletePostDialog';
 import { ReportDialog } from '#/components/ReportDialog';
@@ -159,43 +160,120 @@ function CardActions({
   );
 }
 
+function MeasurementSlider({
+  children,
+  imageUrl,
+  alt,
+}: {
+  children: React.ReactNode;
+  imageUrl: string;
+  alt: string;
+}) {
+  const [active, setActive] = useState(0);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const slides = Array.from(el.children) as HTMLElement[];
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            setActive(slides.indexOf(entry.target as HTMLElement));
+          }
+        }
+      },
+      { root: el, threshold: [0.6] },
+    );
+    slides.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
+
+  const scrollToSlide = (i: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const slide = el.children[i] as HTMLElement | undefined;
+    if (!slide) return;
+    el.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="mt-4">
+      <div
+        ref={scrollerRef}
+        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        <div className="aspect-square w-full flex-none snap-center px-4">{children}</div>
+        <div className="aspect-square w-full flex-none snap-center">
+          <img
+            src={imageUrl}
+            alt={alt}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex justify-center gap-1.5" role="tablist" aria-label="Post media">
+        {[0, 1].map((i) => (
+          <button
+            key={i}
+            type="button"
+            role="tab"
+            aria-selected={active === i}
+            aria-label={i === 0 ? 'Measurement' : 'Photo'}
+            onClick={() => scrollToSlide(i)}
+            className={`h-1.5 rounded-full transition-all ${
+              active === i
+                ? 'w-6 bg-[var(--ink)]'
+                : 'w-1.5 bg-[var(--line-strong)] hover:bg-[var(--ink-muted)]'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MeasurementCard({ post, context }: { post: StrapiPost; context?: PostCardContext }) {
   if (post.waistCm == null || post.heightSnapshotCm == null) return null;
   const whtr = computeWhtr(post.waistCm, post.heightSnapshotCm);
   const band = bandFor(whtr);
   const imageUrl = strapiAssetUrl(post.image?.url ?? null);
+
+  // The hero block — big, saturated, confident. This is the one thing in the
+  // whole UI that's allowed to shout. Everything else is quiet neutral chrome,
+  // which is what lets this land.
+  const hero = (
+    <div
+      className={`flex h-full w-full flex-col items-center justify-center rounded-2xl px-6 py-14 ${BAND_HERO_BG[band]} ${BAND_HERO_FG[band]}`}
+    >
+      <div className="text-[0.75rem] font-semibold uppercase tracking-[0.16em] opacity-80">
+        Waist / Height
+      </div>
+      <div className="display-title mt-3 text-[6rem] leading-none tabular-nums">
+        {whtr.toFixed(2)}
+      </div>
+      <div className="mt-3 text-[0.8rem] font-semibold uppercase tracking-[0.16em] opacity-90">
+        {BAND_LABEL[band]}
+      </div>
+    </div>
+  );
+
   return (
     <OuterCard>
       <CardHeaderRow post={post} context={context} />
 
-      {/* Pro feature — uploaded image appears above the hero when present. */}
-      {imageUrl && (
-        <div className="mt-4 overflow-hidden bg-[var(--bg-subtle)]">
-          <img
-            src={imageUrl}
-            alt={post.caption?.slice(0, 60) ?? 'Check-in photo'}
-            loading="lazy"
-            className="aspect-square w-full object-cover"
-          />
-        </div>
+      {imageUrl ? (
+        <MeasurementSlider
+          imageUrl={imageUrl}
+          alt={post.caption?.slice(0, 60) ?? 'Check-in photo'}
+        >
+          {hero}
+        </MeasurementSlider>
+      ) : (
+        <div className="mx-4 mt-4">{hero}</div>
       )}
-
-      {/* The hero block — big, saturated, confident. This is the one thing
-          in the whole UI that's allowed to shout. Everything else is quiet
-          neutral chrome, which is what lets this land. */}
-      <div
-        className={`mx-4 mt-4 flex flex-col items-center justify-center rounded-2xl px-6 py-14 ${BAND_HERO_BG[band]} ${BAND_HERO_FG[band]}`}
-      >
-        <div className="text-[0.75rem] font-semibold uppercase tracking-[0.16em] opacity-80">
-          Waist / Height
-        </div>
-        <div className="display-title mt-3 text-[6rem] leading-none tabular-nums">
-          {whtr.toFixed(2)}
-        </div>
-        <div className="mt-3 text-[0.8rem] font-semibold uppercase tracking-[0.16em] opacity-90">
-          {BAND_LABEL[band]}
-        </div>
-      </div>
 
       {post.caption && (
         <p className="px-5 pb-3 pt-4 text-sm leading-relaxed text-[var(--ink-soft)]">

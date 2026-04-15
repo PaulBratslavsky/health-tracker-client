@@ -14,6 +14,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as NewPostRouteImport } from './routes/new-post'
 import { Route as MeRouteImport } from './routes/me'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostDocumentIdRouteImport } from './routes/post.$documentId'
@@ -43,6 +44,11 @@ const MeRoute = MeRouteImport.update({
   path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -62,6 +68,7 @@ const PostDocumentIdRoute = PostDocumentIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/feed': typeof FeedRoute
   '/me': typeof MeRoute
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/feed'
     | '/me'
     | '/new-post'
     | '/sign-in'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/feed'
     | '/me'
     | '/new-post'
     | '/sign-in'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/feed'
     | '/me'
     | '/new-post'
     | '/sign-in'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  FeedRoute: typeof FeedRoute
   MeRoute: typeof MeRoute
   NewPostRoute: typeof NewPostRoute
   SignInRoute: typeof SignInRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  FeedRoute: FeedRoute,
   MeRoute: MeRoute,
   NewPostRoute: NewPostRoute,
   SignInRoute: SignInRoute,

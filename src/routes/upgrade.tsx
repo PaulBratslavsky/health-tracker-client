@@ -41,7 +41,7 @@ function UpgradePage() {
             variant="outline"
             className="h-10 rounded-full border-[var(--line)] bg-[var(--card)] px-5 text-sm"
           >
-            <Link to="/">Back to feed</Link>
+            <Link to="/feed">Back to feed</Link>
           </Button>
         </div>
       </div>
