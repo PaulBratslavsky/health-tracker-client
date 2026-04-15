@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { useAppSession } from '#/lib/session';
 import {
   createPostService,
+  deletePostService,
   fetchFeedService,
   fetchMyMeasurementsService,
   fetchMyPostsService,
@@ -10,6 +11,7 @@ import {
   uploadImageBase64Service,
   type CreatePostInput,
   type CreatePostResult,
+  type DeletePostResult,
   type MeasurementPoint,
   type StrapiPost,
 } from '#/lib/services/posts';
@@ -89,6 +91,17 @@ export const createPost = createServerFn({ method: 'POST' })
       return await createPostService(jwt, { ...rest, imageId } as CreatePostInput);
     }
     return await createPostService(jwt, data);
+  });
+
+export const deletePost = createServerFn({ method: 'POST' })
+  .inputValidator((data: { documentId: string }) =>
+    z.object({ documentId: z.string().min(1) }).parse(data),
+  )
+  .handler(async ({ data }): Promise<DeletePostResult> => {
+    const session = await useAppSession();
+    const jwt = session.data?.jwt;
+    if (!jwt) return { success: false, error: 'You must be signed in' };
+    return await deletePostService(jwt, data.documentId);
   });
 
 const MyPostsFilterSchema = z.object({

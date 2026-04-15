@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { DeletePostDialog } from '#/components/DeletePostDialog';
 import { ReportDialog } from '#/components/ReportDialog';
 import { ShareDialog } from '#/components/ShareDialog';
 import {
@@ -130,6 +131,26 @@ function CardActions({
                 />
               </svg>
               Report
+            </button>
+          }
+        />
+      )}
+      {context?.isOwnPost && (
+        <DeletePostDialog
+          postDocumentId={post.documentId}
+          trigger={
+            <button
+              type="button"
+              className="ml-auto inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-[var(--ink-muted)] transition hover:bg-[var(--band-red-bg)] hover:text-[var(--band-red-text)]"
+              aria-label="Delete this post"
+            >
+              <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M6.5 1a.5.5 0 0 0-.5.5V2H3a.5.5 0 0 0 0 1h.5l.6 10.05A1.5 1.5 0 0 0 5.6 14.5h4.8a1.5 1.5 0 0 0 1.5-1.45L12.5 3h.5a.5.5 0 0 0 0-1H10v-.5a.5.5 0 0 0-.5-.5h-3zM5.1 3h5.8l-.59 10H5.69L5.1 3zm1.9 2.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5z"
+                />
+              </svg>
+              Delete
             </button>
           }
         />

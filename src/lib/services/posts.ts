@@ -270,6 +270,30 @@ export async function createPostService(
   return { success: true, post: json.data };
 }
 
+export type DeletePostResult =
+  | { success: true }
+  | { success: false; error: string };
+
+export async function deletePostService(
+  jwt: string,
+  documentId: string,
+): Promise<DeletePostResult> {
+  const res = await fetch(`${STRAPI_URL}/api/posts/${documentId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+  if (!res.ok) {
+    const json = (await res.json().catch(() => ({}))) as {
+      error?: { message: string };
+    };
+    return {
+      success: false,
+      error: json.error?.message ?? `Strapi error ${res.status}`,
+    };
+  }
+  return { success: true };
+}
+
 export type ReportReason =
   | 'spam'
   | 'inappropriate'
