@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { logoutUser } from '#/data/server-functions/auth'
+import { isPremium } from '#/lib/premium'
 import ThemeToggle from './ThemeToggle'
 
 const rootApi = getRouteApi('__root__')
@@ -78,6 +79,7 @@ export default function Header() {
                 <button
                   type="button"
                   className="flex h-8 items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--card)] px-2.5 text-sm font-medium text-[var(--ink)] transition hover:bg-[var(--bg-subtle)]"
+                  title={isPremium(me.profile) ? 'Health Pro member' : undefined}
                 >
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--bg-subtle)] text-[0.6rem] font-semibold text-[var(--ink-soft)]">
                     {(me.profile?.displayName ?? me.username).slice(0, 1).toUpperCase()}
@@ -85,11 +87,30 @@ export default function Header() {
                   <span className="hidden sm:inline text-[13px]">
                     {me.profile?.displayName ?? me.username}
                   </span>
+                  {isPremium(me.profile) && (
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="13"
+                      height="13"
+                      aria-label="Pro member"
+                      className="text-[var(--mustard-deep)]"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M8 1.5l1.95 3.95 4.35.63-3.15 3.07.74 4.33L8 11.44l-3.89 2.04.74-4.33L1.7 6.08l4.35-.63L8 1.5z"
+                      />
+                    </svg>
+                  )}
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel className="text-xs font-medium text-[var(--ink-muted)]">
-                  {me.username}
+                <DropdownMenuLabel className="flex items-center justify-between gap-2 text-xs font-medium text-[var(--ink-muted)]">
+                  <span className="truncate">{me.username}</span>
+                  {isPremium(me.profile) && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[var(--band-yellow-bg)] px-1.5 py-px text-[0.55rem] font-semibold uppercase tracking-wider text-[var(--band-yellow-text)]">
+                      Pro
+                    </span>
+                  )}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>

@@ -4,6 +4,7 @@ import { Button } from '#/components/ui/button';
 import { Label } from '#/components/ui/label';
 import { Input } from '#/components/ui/input';
 import { Textarea } from '#/components/ui/textarea';
+import { FieldImage, type ImageAttachment } from '#/components/forms/FieldImage';
 import { createPost } from '#/data/server-functions/posts';
 import { fetchUrlMetadata } from '#/data/server-functions/metadata';
 import type { UrlMetadata } from '#/lib/services/url-metadata';
@@ -15,6 +16,7 @@ export type ShareKind = 'link' | 'image_embed' | 'youtube';
 
 type Props = {
   kind: ShareKind;
+  isPremium: boolean;
 };
 
 const COPY: Record<
@@ -38,7 +40,16 @@ const COPY: Record<
   },
 };
 
-export function ShareSubForm({ kind }: Props) {
+export function ShareSubForm({ kind, isPremium }: Props) {
+  // Pro users on the Photo tab get the upload flow instead of URL embedding.
+  // Free users (and Pro on Link/Video tabs) keep the URL → metadata flow.
+  if (kind === 'image_embed' && isPremium) {
+    return <PhotoUploadSubForm />;
+  }
+  return <UrlShareSubForm kind={kind} />;
+}
+
+function UrlShareSubForm({ kind }: { kind: ShareKind }) {
   const router = useRouter();
   const [url, setUrl] = useState('');
   const [caption, setCaption] = useState('');
@@ -306,5 +317,79 @@ function PreviewBlock({
         </div>
       </div>
     </div>
+  );
+}
+
+// Pro-only sub-form on the Photo tab — picks a file, uploads via the
+// createPost server function, server function gates on profile.tier.
+function PhotoUploadSubForm() {
+  const router = useRouter();
+  const [image, setImage] = useState<ImageAttachment | null>(null);
+  const [caption, setCaption] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setServerError(null);
+    if (!image) {
+      setServerError('Pick a photo first');
+      return;
+    }
+    setSubmitting(true);
+    const result = await createPost({
+      data: {
+        type: 'image_embed',
+        caption: caption.trim() || undefined,
+        image,
+      },
+    });
+    setSubmitting(false);
+    if (result.success) {
+      await router.invalidate();
+      router.navigate({ to: '/' });
+    } else {
+      setServerError(result.error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="grid gap-5">
+      <FieldImage
+        label="Photo"
+        value={image}
+        onChange={setImage}
+        disabled={submitting}
+        isPremium={true}
+      />
+
+      <div>
+        <Label htmlFor="photo-caption" className="mb-1.5 block text-sm font-medium">
+          Caption (optional)
+        </Label>
+        <Textarea
+          id="photo-caption"
+          placeholder="Why this is worth sharing"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          disabled={submitting}
+          rows={2}
+          className="resize-none"
+        />
+      </div>
+
+      {serverError && (
+        <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          {serverError}
+        </p>
+      )}
+
+      <FormFooter
+        isSubmitting={submitting}
+        canSubmit={image != null}
+        submitLabel="Share photo"
+      />
+    </form>
   );
 }

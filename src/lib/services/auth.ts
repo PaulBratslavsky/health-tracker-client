@@ -67,6 +67,9 @@ export type StrapiUserMe = {
     reputationScore?: number | null;
     postingStatus?: 'active' | 'frozen' | null;
     frozenUntil?: string | null;
+    tier?: 'free' | 'premium' | null;
+    premiumSince?: string | null;
+    premiumUntil?: string | null;
   } | null;
 };
 

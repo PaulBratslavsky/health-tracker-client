@@ -81,10 +81,21 @@ export const ShareYoutubeFormSchema = z
 // SERVER INPUT SCHEMA — discriminated union covering all four post types
 // =============================================================================
 
+// Optional image attachment for measurement posts. Premium-gated server-side
+// in the createPost server function.
+const ImageAttachmentSchema = z
+  .object({
+    base64: z.string().min(1),
+    filename: z.string().min(1).max(255),
+    mimeType: z.string().regex(/^image\//, 'Must be an image'),
+  })
+  .optional();
+
 export const NewMeasurementInputSchema = z.object({
   type: z.literal('measurement'),
   caption: z.string().min(1).max(500).optional(),
   waistCm: z.number().int().positive().max(250),
+  image: ImageAttachmentSchema,
 });
 
 export const NewLinkInputSchema = z.object({
@@ -97,11 +108,19 @@ export const NewLinkInputSchema = z.object({
   linkSiteName: z.string().max(100).optional(),
 });
 
-export const NewImageEmbedInputSchema = z.object({
-  type: z.literal('image_embed'),
-  caption: z.string().min(1).max(500).optional(),
-  url: z.url().max(2000),
-});
+// image_embed accepts EITHER a third-party URL (free users) OR an uploaded
+// image (premium users), with at least one required. The server function
+// tier-gates the upload path.
+export const NewImageEmbedInputSchema = z
+  .object({
+    type: z.literal('image_embed'),
+    caption: z.string().min(1).max(500).optional(),
+    url: z.url().max(2000).optional(),
+    image: ImageAttachmentSchema,
+  })
+  .refine((d) => d.url != null || d.image != null, {
+    message: 'Either a URL or an uploaded image is required',
+  });
 
 export const NewYoutubeInputSchema = z.object({
   type: z.literal('youtube'),

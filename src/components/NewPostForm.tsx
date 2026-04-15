@@ -13,9 +13,10 @@ const TABS: Array<{ id: Tab; label: string; description: string }> = [
 
 type Props = {
   heightCm: number | null;
+  isPremium: boolean;
 };
 
-export function NewPostForm({ heightCm }: Props) {
+export function NewPostForm({ heightCm, isPremium }: Props) {
   const [tab, setTab] = useState<Tab>('checkin');
 
   return (
@@ -39,14 +40,14 @@ export function NewPostForm({ heightCm }: Props) {
 
       {tab === 'checkin' ? (
         heightCm ? (
-          <CheckinSubForm heightCm={heightCm} />
+          <CheckinSubForm heightCm={heightCm} isPremium={isPremium} />
         ) : (
           <p className="rounded-md border border-amber-300/40 bg-amber-50/40 px-3 py-2 text-sm text-amber-900">
             Set your height in your profile before posting a check-in.
           </p>
         )
       ) : (
-        <ShareSubForm kind={tab as ShareKind} />
+        <ShareSubForm kind={tab as ShareKind} isPremium={isPremium} />
       )}
     </div>
   );

@@ -9,6 +9,8 @@ export type StrapiPostType = 'measurement' | 'link' | 'image_embed' | 'youtube';
 
 export type StrapiPostStatus = 'visible' | 'in_review' | 'hidden';
 
+export type StrapiTier = 'free' | 'premium';
+
 export type StrapiPost = {
   id: number;
   documentId: string;
@@ -16,6 +18,9 @@ export type StrapiPost = {
   status: StrapiPostStatus;
   reportCount: number | null;
   caption: string | null;
+  // Uploaded image (Pro feature). Only present when the post's author was a
+  // premium user at upload time. Never populated for free users.
+  image: StrapiMedia;
   // measurement-only
   waistCm: number | null;
   heightSnapshotCm: number | null;
@@ -32,11 +37,14 @@ export type StrapiPost = {
     displayName: string;
     slug: string | null;
     avatar: StrapiMedia;
+    tier: StrapiTier | null;
+    premiumUntil: string | null;
   } | null;
 };
 
 const FEED_QUERY = [
   'populate%5Bauthor%5D%5Bpopulate%5D=avatar',
+  'populate%5Bimage%5D=true',
   'filters%5Bstatus%5D%5B%24eq%5D=visible',
   'sort=createdAt:desc',
   'pagination%5BpageSize%5D=20',
@@ -59,6 +67,7 @@ export async function fetchPostByDocumentIdService(
 ): Promise<StrapiPost | null> {
   const params = new URLSearchParams();
   params.set('populate[author][populate]', 'avatar');
+  params.set('populate[image]', 'true');
   params.set('filters[status][$eq]', 'visible');
 
   const headers: Record<string, string> = {};
@@ -80,6 +89,7 @@ export async function fetchMyPostsService(
 ): Promise<StrapiPost[]> {
   const params = new URLSearchParams();
   params.set('populate[author][populate]', 'avatar');
+  params.set('populate[image]', 'true');
   params.set('filters[author][documentId][$eq]', profileDocumentId);
   if (typeFilter) {
     params.set('filters[type][$eq]', typeFilter);
@@ -149,6 +159,7 @@ export type CreatePostInput =
       type: 'measurement';
       caption?: string;
       waistCm: number;
+      imageId?: number;
     }
   | {
       type: 'link';
@@ -162,7 +173,8 @@ export type CreatePostInput =
   | {
       type: 'image_embed';
       caption?: string;
-      url: string;
+      url?: string;
+      imageId?: number;
     }
   | {
       type: 'youtube';
@@ -173,6 +185,49 @@ export type CreatePostInput =
       linkImageUrl?: string;
     };
 
+export type UploadImageResult =
+  | { success: true; id: number; url: string }
+  | { success: false; error: string };
+
+/**
+ * Upload an image to Strapi /api/upload. Server-side only (uses Buffer +
+ * Blob from Node fetch). Called from the createPost server function so the
+ * JWT never enters the browser.
+ */
+export async function uploadImageBase64Service(
+  jwt: string,
+  base64: string,
+  filename: string,
+  mimeType: string,
+): Promise<UploadImageResult> {
+  const stripped = base64.replace(/^data:[^;]+;base64,/, '');
+  const buffer = Buffer.from(stripped, 'base64');
+  const blob = new Blob([buffer], { type: mimeType });
+
+  const formData = new FormData();
+  formData.append('files', blob, filename);
+
+  const res = await fetch(`${STRAPI_URL}/api/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${jwt}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const json = (await res.json().catch(() => ({}))) as {
+      error?: { message: string };
+    };
+    return {
+      success: false,
+      error: json.error?.message ?? `Upload failed (${res.status})`,
+    };
+  }
+
+  const json = (await res.json()) as Array<{ id: number; url: string }>;
+  if (!json[0]) return { success: false, error: 'Upload returned no file' };
+  return { success: true, id: json[0].id, url: json[0].url };
+}
+
 export type CreatePostResult =
   | { success: true; post: StrapiPost }
   | { success: false; error: string };
@@ -181,13 +236,20 @@ export async function createPostService(
   jwt: string,
   input: CreatePostInput,
 ): Promise<CreatePostResult> {
+  // Media relations in Strapi REST are referenced by numeric id. The
+  // client hands us `imageId` on measurement posts (premium feature);
+  // we translate that to the `image` field in the create body.
+  const { imageId, ...rest } = input as CreatePostInput & { imageId?: number };
+  const data: Record<string, unknown> = { ...rest };
+  if (imageId != null) data.image = imageId;
+
   const res = await fetch(`${STRAPI_URL}/api/posts`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${jwt}`,
     },
-    body: JSON.stringify({ data: input }),
+    body: JSON.stringify({ data }),
   });
   const json = (await res.json().catch(() => ({}))) as
     | { data: StrapiPost }

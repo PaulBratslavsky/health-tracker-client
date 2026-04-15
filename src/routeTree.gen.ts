@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UpgradeRouteImport } from './routes/upgrade'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as NewPostRouteImport } from './routes/new-post'
@@ -17,6 +18,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostDocumentIdRouteImport } from './routes/post.$documentId'
 
+const UpgradeRoute = UpgradeRouteImport.update({
+  id: '/upgrade',
+  path: '/upgrade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/upgrade': typeof UpgradeRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/upgrade': typeof UpgradeRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/new-post': typeof NewPostRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/upgrade': typeof UpgradeRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/new-post'
     | '/sign-in'
     | '/sign-up'
+    | '/upgrade'
     | '/post/$documentId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/new-post'
     | '/sign-in'
     | '/sign-up'
+    | '/upgrade'
     | '/post/$documentId'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/new-post'
     | '/sign-in'
     | '/sign-up'
+    | '/upgrade'
     | '/post/$documentId'
   fileRoutesById: FileRoutesById
 }
@@ -118,11 +130,19 @@ export interface RootRouteChildren {
   NewPostRoute: typeof NewPostRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  UpgradeRoute: typeof UpgradeRoute
   PostDocumentIdRoute: typeof PostDocumentIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/upgrade': {
+      id: '/upgrade'
+      path: '/upgrade'
+      fullPath: '/upgrade'
+      preLoaderRoute: typeof UpgradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-up': {
       id: '/sign-up'
       path: '/sign-up'
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewPostRoute: NewPostRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  UpgradeRoute: UpgradeRoute,
   PostDocumentIdRoute: PostDocumentIdRoute,
 }
 export const routeTree = rootRouteImport

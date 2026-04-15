@@ -9,6 +9,7 @@ import {
 import { NewPostForm } from '#/components/NewPostForm';
 import { SetHeightForm } from '#/components/SetHeightForm';
 import { getCurrentUser } from '#/data/server-functions/auth';
+import { isPremium } from '#/lib/premium';
 
 export const Route = createFileRoute('/new-post')({
   loader: async () => {
@@ -30,6 +31,7 @@ export const Route = createFileRoute('/new-post')({
 function NewPostPage() {
   const { profile } = Route.useLoaderData();
   const heightCm = profile.heightCm;
+  const premium = isPremium(profile);
 
   return (
     <main className="page-wrap flex justify-center px-4 py-12 sm:py-16">
@@ -42,7 +44,7 @@ function NewPostPage() {
         </div>
         <Card className="rise-in w-full rounded-2xl border border-[var(--line)] bg-[var(--card)] p-0 shadow-none">
           <CardContent className="p-6 sm:p-8">
-            <NewPostForm heightCm={heightCm} />
+            <NewPostForm heightCm={heightCm} isPremium={premium} />
             {!heightCm && (
               <div className="mt-8 border-t border-[var(--line)] pt-6">
                 <p className="island-kicker mb-3">Set your height to enable check-ins</p>

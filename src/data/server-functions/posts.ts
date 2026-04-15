@@ -7,11 +7,14 @@ import {
   fetchMyMeasurementsService,
   fetchMyPostsService,
   fetchPostByDocumentIdService,
+  uploadImageBase64Service,
+  type CreatePostInput,
   type CreatePostResult,
   type MeasurementPoint,
   type StrapiPost,
 } from '#/lib/services/posts';
 import { fetchCurrentUserService } from '#/lib/services/auth';
+import { isPremium } from '#/lib/premium';
 import { NewPostInputSchema, type NewPostInput } from '#/lib/validations/post';
 
 export const getFeed = createServerFn({ method: 'GET' }).handler(
@@ -38,6 +41,53 @@ export const createPost = createServerFn({ method: 'POST' })
     const session = await useAppSession();
     const jwt = session.data?.jwt;
     if (!jwt) return { success: false, error: 'You must be signed in to post' };
+
+    // Defense layer 2: tier gate on image uploads. Uploads are allowed on
+    // measurement posts (attach a photo to a check-in) and image_embed posts
+    // (share a photo directly). Both require premium. See
+    // docs/premium-tier-plan.md for the full three-layer rationale.
+    const hasImage =
+      (data.type === 'measurement' && data.image != null) ||
+      (data.type === 'image_embed' && data.image != null);
+
+    if (hasImage) {
+      const me = await fetchCurrentUserService(jwt);
+      if (!isPremium(me?.profile)) {
+        return {
+          success: false,
+          error: 'Photo uploads are a Pro feature. Upgrade to attach images.',
+        };
+      }
+    }
+
+    // Upload the image first (if present), then create the post referencing
+    // the returned media id. Does the upload server-side so the JWT never
+    // enters the browser.
+    let imageId: number | undefined;
+    if (hasImage) {
+      const attachment = (data as { image?: { base64: string; filename: string; mimeType: string } }).image;
+      if (attachment) {
+        const upload = await uploadImageBase64Service(
+          jwt,
+          attachment.base64,
+          attachment.filename,
+          attachment.mimeType,
+        );
+        if (!upload.success) return { success: false, error: upload.error };
+        imageId = upload.id;
+      }
+    }
+
+    // Strip the image attachment from the post body — only the id lands in
+    // Strapi. Other post types pass through unchanged.
+    if (data.type === 'measurement') {
+      const { image: _image, ...rest } = data;
+      return await createPostService(jwt, { ...rest, imageId } as CreatePostInput);
+    }
+    if (data.type === 'image_embed') {
+      const { image: _image, ...rest } = data;
+      return await createPostService(jwt, { ...rest, imageId } as CreatePostInput);
+    }
     return await createPostService(jwt, data);
   });
 

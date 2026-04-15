@@ -5,6 +5,7 @@ import { Button } from '#/components/ui/button';
 import { Label } from '#/components/ui/label';
 import { Textarea } from '#/components/ui/textarea';
 import { FieldText } from '#/components/forms/FieldText';
+import { FieldImage, type ImageAttachment } from '#/components/forms/FieldImage';
 import { createPost } from '#/data/server-functions/posts';
 import { CheckinFormSchema, type CheckinFormValues } from '#/lib/validations/post';
 import {
@@ -16,9 +17,12 @@ import {
   computeWhtr,
 } from '#/lib/whtr';
 
-export function CheckinSubForm({ heightCm }: { heightCm: number }) {
+type Props = { heightCm: number; isPremium: boolean };
+
+export function CheckinSubForm({ heightCm, isPremium }: Props) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
+  const [image, setImage] = useState<ImageAttachment | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -34,7 +38,9 @@ export function CheckinSubForm({ heightCm }: { heightCm: number }) {
         setServerError('Fix the highlighted fields and try again');
         return;
       }
-      const result = await createPost({ data: parsed.data });
+      const result = await createPost({
+        data: { ...parsed.data, image: image ?? undefined },
+      });
       if (result.success) {
         await router.invalidate();
         router.navigate({ to: '/' });
@@ -131,6 +137,13 @@ export function CheckinSubForm({ heightCm }: { heightCm: number }) {
           )}
         </form.Field>
       </div>
+
+      <FieldImage
+        value={image}
+        onChange={setImage}
+        disabled={form.state.isSubmitting}
+        isPremium={isPremium}
+      />
 
       <p className="text-xs text-muted-foreground">
         Your height ({heightCm} cm) is snapshotted onto this post when you submit.

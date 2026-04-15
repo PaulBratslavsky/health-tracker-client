@@ -11,6 +11,7 @@ import {
   bandFor,
   computeWhtr,
 } from '#/lib/whtr';
+import { isPremium } from '#/lib/premium';
 import { strapiAssetUrl, type StrapiPost } from '#/lib/services/posts';
 
 type PostCardContext = {
@@ -63,8 +64,16 @@ function CardHeaderRow({
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-1 flex-col leading-tight">
-        <span className="text-sm font-semibold tracking-tight text-[var(--ink)]">
+        <span className="flex items-center gap-1.5 text-sm font-semibold tracking-tight text-[var(--ink)]">
           {author?.displayName ?? 'Unknown'}
+          {isPremium(author) && (
+            <span
+              className="inline-flex items-center rounded-full bg-[var(--band-yellow-bg)] px-1.5 py-px text-[0.55rem] font-semibold uppercase tracking-wider text-[var(--band-yellow-text)]"
+              title="Health Pro member"
+            >
+              Pro
+            </span>
+          )}
         </span>
         <span className="text-xs text-[var(--ink-muted)]">{relativeTime(post.createdAt)}</span>
       </div>
@@ -133,9 +142,22 @@ function MeasurementCard({ post, context }: { post: StrapiPost; context?: PostCa
   if (post.waistCm == null || post.heightSnapshotCm == null) return null;
   const whtr = computeWhtr(post.waistCm, post.heightSnapshotCm);
   const band = bandFor(whtr);
+  const imageUrl = strapiAssetUrl(post.image?.url ?? null);
   return (
     <OuterCard>
       <CardHeaderRow post={post} context={context} />
+
+      {/* Pro feature — uploaded image appears above the hero when present. */}
+      {imageUrl && (
+        <div className="mt-4 overflow-hidden bg-[var(--bg-subtle)]">
+          <img
+            src={imageUrl}
+            alt={post.caption?.slice(0, 60) ?? 'Check-in photo'}
+            loading="lazy"
+            className="aspect-square w-full object-cover"
+          />
+        </div>
+      )}
 
       {/* The hero block — big, saturated, confident. This is the one thing
           in the whole UI that's allowed to shout. Everything else is quiet
@@ -176,16 +198,24 @@ function MeasurementCard({ post, context }: { post: StrapiPost; context?: PostCa
 }
 
 function ImageEmbedCard({ post, context }: { post: StrapiPost; context?: PostCardContext }) {
-  if (!post.url) return null;
+  // Prefer the Strapi-hosted image (Pro upload) over the external URL.
+  // Either one is sufficient; the schema requires at least one.
+  const hostedUrl = strapiAssetUrl(post.image?.url ?? null);
+  const imageSrc = hostedUrl ?? post.url;
+  if (!imageSrc) return null;
+  // Skip the no-referrer policy for our own Strapi-hosted images so the
+  // browser sends the Referer header (lets us serve hot-linked uploads
+  // safely later if we ever care).
+  const isHosted = hostedUrl != null;
   return (
     <OuterCard>
       <CardHeaderRow post={post} context={context} />
       <div className="mt-4 overflow-hidden bg-[var(--bg-subtle)]">
         <img
-          src={post.url}
+          src={imageSrc}
           alt={post.caption?.slice(0, 60) ?? 'Image'}
           loading="lazy"
-          referrerPolicy="no-referrer"
+          referrerPolicy={isHosted ? undefined : 'no-referrer'}
           className="aspect-square w-full object-cover"
         />
       </div>

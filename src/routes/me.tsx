@@ -9,6 +9,7 @@ import { WhtrChart } from '#/components/WhtrChart';
 import { getCurrentUser } from '#/data/server-functions/auth';
 import { getMyPosts, getMyMeasurements } from '#/data/server-functions/posts';
 import { strapiAssetUrl, type StrapiPost } from '#/lib/services/posts';
+import { formatTier, isPremium } from '#/lib/premium';
 
 const DEFAULT_DAYS = 30;
 
@@ -109,6 +110,26 @@ function MyHistoryPage() {
             ) : null}
             <p className="mt-1 text-xs text-[var(--ink-muted)]">
               Current height: {profile.heightCm ? `${profile.heightCm} cm` : 'not set'}
+            </p>
+            <p className="mt-1 flex items-center gap-2 text-xs text-[var(--ink-muted)]">
+              Plan:
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide ${
+                  isPremium(profile)
+                    ? 'bg-[var(--band-yellow-bg)] text-[var(--band-yellow-text)]'
+                    : 'bg-[var(--bg-subtle)] text-[var(--ink-soft)]'
+                }`}
+              >
+                {formatTier(profile)}
+              </span>
+              {!isPremium(profile) && (
+                <Link
+                  to="/upgrade"
+                  className="text-[var(--accent)] no-underline hover:underline"
+                >
+                  Upgrade
+                </Link>
+              )}
             </p>
           </div>
           <div className="flex flex-shrink-0 gap-2">
