@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router';
 import { Button } from '#/components/ui/button';
 import {
+  clearVideoFailure,
   findVideoContent,
   triggerContentGeneration,
 } from '#/data/server-functions/learning';
@@ -34,6 +35,9 @@ export const Route = createFileRoute('/learn/$videoId')({
     if (trigger.status === 'started') return { status: 'pending' };
     if (trigger.status === 'not_authed' || trigger.status === 'not_pro') {
       return { status: 'upgrade' };
+    }
+    if (trigger.status === 'rate_limited') {
+      return { status: 'error', error: trigger.error };
     }
     return { status: 'error', error: trigger.error };
   },
@@ -393,14 +397,27 @@ function UpgradeState({ videoId }: Readonly<{ videoId: string }>) {
 
 function ErrorState({ error }: Readonly<{ error: string }>) {
   const router = useRouter();
+  const { videoId } = Route.useParams();
+  const [retrying, setRetrying] = useState(false);
+
+  const handleRetry = async () => {
+    setRetrying(true);
+    // Clear the server-side failure cache so the next loader invocation
+    // actually re-triggers generation (rather than returning the cached
+    // error). Then invalidate to re-run the loader.
+    await clearVideoFailure({ data: { videoId } });
+    await router.invalidate();
+    setRetrying(false);
+  };
+
   return (
     <main className="page-wrap flex min-h-[60vh] items-center justify-center px-4 py-14">
       <div className="mx-auto max-w-md rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
         <h1 className="display-title text-2xl text-[var(--ink)]">Couldn't generate the summary</h1>
         <p className="mt-3 text-sm text-[var(--ink-soft)]">{error}</p>
         <div className="mt-6 flex justify-center gap-2">
-          <Button type="button" size="pill" onClick={() => router.invalidate()}>
-            Retry
+          <Button type="button" size="pill" onClick={handleRetry} disabled={retrying}>
+            {retrying ? 'Retrying…' : 'Retry'}
           </Button>
         </div>
       </div>

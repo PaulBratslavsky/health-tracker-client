@@ -16,7 +16,7 @@ const SUMMARY_MODEL = 'claude-haiku-4-5-20251001';
 // Rate limit: a Pro member can trigger N successful generations per rolling
 // 24h window. Counted by looking at their recent content entries — no extra
 // schema needed. Dedupe hits short-circuit before this runs.
-const RATE_LIMIT_PER_24H = 3;
+export const RATE_LIMIT_PER_24H = 10;
 
 type ServiceResult<T> = { success: true; data: T } | { success: false; error: string };
 
@@ -174,7 +174,7 @@ export async function findContentByVideoIdService(
   return json.data?.[0] ?? null;
 }
 
-async function countRecentContentGenerations(
+export async function countRecentContentGenerations(
   jwt: string,
   profileDocumentId: string,
 ): Promise<number> {

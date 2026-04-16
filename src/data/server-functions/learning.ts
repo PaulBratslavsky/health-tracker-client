@@ -2,8 +2,10 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { useAppSession } from '#/lib/session';
 import {
+  countRecentContentGenerations,
   findContentByVideoIdService,
   generateVideoLearningService,
+  RATE_LIMIT_PER_24H,
   type StrapiContent,
 } from '#/lib/services/learning';
 import { fetchCurrentUserService } from '#/lib/services/auth';
@@ -19,7 +21,6 @@ const VideoIdSchema = z.object({
 
 // -----------------------------------------------------------------------------
 // Pure lookup — called by the route loader and by the polling loop.
-// Fast, cacheable, works with or without a JWT.
 // -----------------------------------------------------------------------------
 export const findVideoContent = createServerFn({ method: 'GET' })
   .inputValidator((data: { videoId: string }) => VideoIdSchema.parse(data))
@@ -31,10 +32,11 @@ export const findVideoContent = createServerFn({ method: 'GET' })
 
 // -----------------------------------------------------------------------------
 // Trigger — kicks off generation and returns immediately.
-// The actual AI + Strapi work runs DETACHED on the server; the user can
-// navigate away and the job keeps going (as long as the Node process is
-// alive). Idempotent: re-triggering for a video that already has content or
-// is already being generated just short-circuits.
+//
+// Synchronous pre-checks (rate limit, auth, tier) happen BEFORE the detached
+// task fires so they can be reported back to the UI. Background failures
+// (AI error, Strapi error) are recorded in `recentFailures` so the polling
+// loop sees them on the next invalidate.
 // -----------------------------------------------------------------------------
 
 export type TriggerResult =
@@ -45,12 +47,27 @@ export type TriggerResult =
   | { status: 'rate_limited'; error: string }
   | { status: 'error'; error: string };
 
-// Module-level lock set so concurrent triggers for the same videoId don't
-// spawn duplicate AI calls. In-memory — fine for a single Node process; if
-// we ever scale horizontally this moves to Redis. The `findContentByVideoId`
-// dedupe check still covers multi-process races (second worker finds the
-// content created by the first on the next query).
+// In-process set so two concurrent clicks on the same videoId don't spawn
+// duplicate AI calls. Cleared when the detached task finishes.
 const inflight = new Set<string>();
+
+// Recent background failures, keyed by videoId. The polling loop checks
+// these on subsequent calls so a silently-failed generation surfaces as an
+// error state instead of an infinite "generating" spinner. Entries self-
+// expire after 5 minutes so a later retry can proceed.
+type RecentFailure = { error: string; at: number };
+const recentFailures = new Map<string, RecentFailure>();
+const FAILURE_TTL_MS = 5 * 60 * 1000;
+
+function readRecentFailure(videoId: string): string | null {
+  const entry = recentFailures.get(videoId);
+  if (!entry) return null;
+  if (Date.now() - entry.at > FAILURE_TTL_MS) {
+    recentFailures.delete(videoId);
+    return null;
+  }
+  return entry.error;
+}
 
 export const triggerContentGeneration = createServerFn({ method: 'POST' })
   .inputValidator((data: { videoId: string }) => VideoIdSchema.parse(data))
@@ -58,24 +75,49 @@ export const triggerContentGeneration = createServerFn({ method: 'POST' })
     const session = await useAppSession();
     const jwt = session.data?.jwt;
 
-    // Short-circuit if already done.
+    // 1. Dedupe — already generated.
     const existing = await findContentByVideoIdService(data.videoId, jwt);
-    if (existing) return { status: 'found', content: existing };
+    if (existing) {
+      recentFailures.delete(data.videoId);
+      return { status: 'found', content: existing };
+    }
 
+    // 2. Auth gate.
     if (!jwt) return { status: 'not_authed' };
 
     const me = await fetchCurrentUserService(jwt);
     if (!me?.profile?.documentId) return { status: 'not_authed' };
     if (!isPremium(me.profile)) return { status: 'not_pro' };
 
-    // Deduplicate concurrent in-process triggers for the same videoId.
+    // 3. Already in flight for this video in this process — polling will
+    //    pick up the result (or the failure) as it comes back.
     if (inflight.has(data.videoId)) return { status: 'started' };
 
-    inflight.add(data.videoId);
+    // 4. Surface a recent background failure so the UI can render an error
+    //    state instead of polling forever. The user can hit Retry which
+    //    clears the cache and tries again.
+    const previousError = readRecentFailure(data.videoId);
+    if (previousError) {
+      return { status: 'error', error: previousError };
+    }
 
-    // FIRE AND FORGET. The client's response doesn't wait for this. The
-    // Node process keeps the promise alive; the client can navigate away
-    // freely. On serverless this would need platform-specific `waitUntil`.
+    // 5. Rate limit check — synchronous, so we can return an explanatory
+    //    status to the client BEFORE spawning a background task that would
+    //    fail anyway.
+    const recentCount = await countRecentContentGenerations(
+      jwt,
+      me.profile.documentId,
+    );
+    if (recentCount >= RATE_LIMIT_PER_24H) {
+      return {
+        status: 'rate_limited',
+        error: `You've generated ${RATE_LIMIT_PER_24H} summaries in the last 24 hours. Try again later.`,
+      };
+    }
+
+    // 6. Fire-and-forget. Errors are captured in `recentFailures` so the
+    //    next poll surfaces them. `inflight` is cleared in `finally`.
+    inflight.add(data.videoId);
     void (async () => {
       try {
         const profileDocumentId = me.profile!.documentId;
@@ -85,12 +127,20 @@ export const triggerContentGeneration = createServerFn({ method: 'POST' })
           profileDocumentId,
         });
         if (!result.success) {
+          recentFailures.set(data.videoId, {
+            error: result.error,
+            at: Date.now(),
+          });
           console.error('[bg generation] failed', {
             videoId: data.videoId,
             error: result.error,
           });
+        } else {
+          recentFailures.delete(data.videoId);
         }
       } catch (err) {
+        const message = err instanceof Error ? err.message : 'Generation failed';
+        recentFailures.set(data.videoId, { error: message, at: Date.now() });
         console.error('[bg generation] exception', {
           videoId: data.videoId,
           err,
@@ -101,4 +151,14 @@ export const triggerContentGeneration = createServerFn({ method: 'POST' })
     })();
 
     return { status: 'started' };
+  });
+
+// -----------------------------------------------------------------------------
+// Clear the last failure for a video, so the user can retry after an error.
+// -----------------------------------------------------------------------------
+export const clearVideoFailure = createServerFn({ method: 'POST' })
+  .inputValidator((data: { videoId: string }) => VideoIdSchema.parse(data))
+  .handler(async ({ data }): Promise<{ ok: true }> => {
+    recentFailures.delete(data.videoId);
+    return { ok: true };
   });
