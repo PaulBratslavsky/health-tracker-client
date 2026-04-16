@@ -6,8 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { PostCard } from '#/components/PostCard';
 import { ProfileEditForm } from '#/components/ProfileEditForm';
 import { WhtrChart } from '#/components/WhtrChart';
+import { FastChart } from '#/components/FastChart';
 import { getCurrentUser } from '#/data/server-functions/auth';
 import { getMyPosts, getMyMeasurements } from '#/data/server-functions/posts';
+import { getMyFasts } from '#/data/server-functions/fasts';
 import { strapiAssetUrl, type StrapiPost } from '#/lib/services/posts';
 import { formatTier, isPremium } from '#/lib/premium';
 
@@ -22,11 +24,12 @@ export const Route = createFileRoute('/me')({
         'Your account has no profile linked. Sign out and back in to fix it.',
       );
     }
-    const [posts, measurements] = await Promise.all([
+    const [posts, measurements, fasts] = await Promise.all([
       getMyPosts({ data: { type: 'all' } }),
       getMyMeasurements({ data: { days: DEFAULT_DAYS } }),
+      getMyFasts(),
     ]);
-    return { me, profile: me.profile, posts, measurements };
+    return { me, profile: me.profile, posts, measurements, fasts };
   },
   component: MyHistoryPage,
   head: () => ({ meta: [{ title: 'My history · Health' }] }),
@@ -42,15 +45,19 @@ const POST_TYPE_FILTERS: Array<{ id: PostTypeFilter; label: string }> = [
   { id: 'youtube', label: 'Videos' },
 ];
 
+type ChartTab = 'whtr' | 'fast';
+
 function MyHistoryPage() {
   const {
     profile,
     posts: initialPosts,
     measurements,
+    fasts,
   } = Route.useLoaderData();
   const [editing, setEditing] = useState(false);
   const [posts, setPosts] = useState<StrapiPost[]>(initialPosts);
   const [typeFilter, setTypeFilter] = useState<PostTypeFilter>('all');
+  const [chartTab, setChartTab] = useState<ChartTab>('whtr');
   const [isPending, startTransition] = useTransition();
   const avatarUrl = strapiAssetUrl(profile.avatar?.url ?? null);
   const initial = profile.displayName.slice(0, 1).toUpperCase();
@@ -173,15 +180,41 @@ function MyHistoryPage() {
       </Card>
 
       <section className="mb-10">
-        <header className="mb-4 flex items-end justify-between">
+        <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="island-kicker mb-1">Your progress</p>
             <h2 className="display-title text-2xl text-[var(--ink)] sm:text-3xl">
-              WHtR over time
+              {chartTab === 'whtr' ? 'WHtR over time' : 'Fast history'}
             </h2>
           </div>
+          <div
+            role="tablist"
+            aria-label="Chart view"
+            className="inline-flex rounded-full border border-[var(--line)] bg-[var(--card)] p-0.5"
+          >
+            {(['whtr', 'fast'] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                aria-selected={chartTab === tab}
+                onClick={() => setChartTab(tab)}
+                className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
+                  chartTab === tab
+                    ? 'bg-[var(--ink)] text-white'
+                    : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
+                }`}
+              >
+                {tab === 'whtr' ? 'WHtR' : 'Fasts'}
+              </button>
+            ))}
+          </div>
         </header>
-        <WhtrChart initialMeasurements={measurements} initialDays={DEFAULT_DAYS} />
+        {chartTab === 'whtr' ? (
+          <WhtrChart initialMeasurements={measurements} initialDays={DEFAULT_DAYS} />
+        ) : (
+          <FastChart fasts={fasts} />
+        )}
       </section>
 
       <section>
