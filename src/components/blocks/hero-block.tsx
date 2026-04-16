@@ -51,7 +51,7 @@ export function HeroBlock({
               className={
                 link.variant === 'secondary'
                   ? 'inline-flex h-10 items-center rounded-full border border-(--line) bg-(--card) px-5 text-sm font-medium text-(--ink) transition hover:bg-(--bg-subtle)'
-                  : 'inline-flex h-10 items-center rounded-full bg-(--ink) px-5 text-sm font-medium text-white transition hover:bg-(--ink-soft)'
+                  : 'inline-flex h-10 items-center rounded-full bg-(--ink) px-5 text-sm font-medium text-(--cream) transition hover:bg-(--ink-soft)'
               }
             >
               {link.label}

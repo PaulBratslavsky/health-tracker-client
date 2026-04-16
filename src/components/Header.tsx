@@ -53,13 +53,6 @@ export default function Header() {
           {me && (
             <>
               <Link
-                to="/new-post"
-                className="nav-link text-sm"
-                activeProps={{ className: 'nav-link is-active text-sm' }}
-              >
-                New post
-              </Link>
-              <Link
                 to="/fast"
                 className="nav-link text-sm"
                 activeProps={{ className: 'nav-link is-active text-sm' }}

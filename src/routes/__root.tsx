@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 import { BottomNav } from '../components/BottomNav'
+import { NewPostFab } from '../components/NewPostFab'
 import { getCurrentUser } from '../data/server-functions/auth'
 
 import appCss from '../styles.css?url'
@@ -53,6 +54,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {children}
         <Footer />
         <BottomNav />
+        <NewPostFab />
         <TanStackDevtools
           config={{
             position: 'bottom-right',

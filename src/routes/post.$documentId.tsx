@@ -43,11 +43,7 @@ function SinglePostPage() {
           <PostCard post={post} currentUserProfileDocumentId={myProfileId} />
         </div>
         <div className="mt-8 flex justify-center">
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 rounded-full border-[var(--line)] bg-[var(--card)] px-5 text-sm hover:bg-[var(--bg-subtle)]"
-          >
+          <Button asChild size="pill" variant="outline">
             <Link to="/feed">Back to feed</Link>
           </Button>
         </div>
@@ -69,10 +65,7 @@ function NotFoundPost() {
         <p className="mt-3 text-sm text-[var(--ink-soft)]">
           It may have been deleted, hidden for review, or the link is wrong.
         </p>
-        <Button
-          asChild
-          className="mt-6 h-10 rounded-full bg-[var(--ink)] px-5 text-sm hover:bg-[var(--ink-soft)]"
-        >
+        <Button asChild size="pill" className="mt-6">
           <Link to="/feed">Back to feed</Link>
         </Button>
       </div>

@@ -154,13 +154,13 @@ function StartFastView({
               disabled={submitting}
               className={`rounded-xl border px-4 py-3 text-left transition ${
                 selected
-                  ? 'border-(--ink) bg-(--ink) text-white'
+                  ? 'border-(--ink) bg-(--ink) text-(--cream)'
                   : 'border-(--line) bg-card text-(--ink) hover:bg-(--bg-subtle)'
               }`}
             >
               <div className="text-sm font-semibold">{t.label}</div>
               <div
-                className={`mt-0.5 text-xs ${selected ? 'text-white/70' : 'text-(--ink-muted)'}`}
+                className={`mt-0.5 text-xs ${selected ? 'text-(--cream)/70' : 'text-(--ink-muted)'}`}
               >
                 {t.hint}
               </div>
@@ -170,12 +170,7 @@ function StartFastView({
       </div>
 
       <div className="mt-6 flex justify-end">
-        <Button
-          type="button"
-          onClick={onStart}
-          disabled={submitting}
-          className="h-11 rounded-full bg-(--ink) px-6 text-sm font-medium hover:bg-(--ink-soft)"
-        >
+        <Button type="button" size="pill-lg" onClick={onStart} disabled={submitting}>
           {submitting ? 'Starting…' : 'Start fast'}
         </Button>
       </div>
@@ -204,20 +199,15 @@ function ActiveFastView({
         onAutoClamp={onAutoClamp}
       />
       <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-        <Button
-          type="button"
-          onClick={onEnd}
-          disabled={submitting}
-          className="h-11 rounded-full bg-(--ink) px-6 text-sm font-medium hover:bg-(--ink-soft)"
-        >
+        <Button type="button" size="pill-lg" onClick={onEnd} disabled={submitting}>
           {submitting ? 'Ending…' : 'End fast'}
         </Button>
         <Button
           type="button"
+          size="pill-lg"
           variant="ghost"
           onClick={onCancel}
           disabled={submitting}
-          className="h-11 rounded-full px-6 text-sm font-medium text-(--ink-muted) hover:text-(--ink)"
         >
           Cancel (don't record)
         </Button>

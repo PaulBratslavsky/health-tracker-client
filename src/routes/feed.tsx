@@ -35,20 +35,12 @@ function FeedPage() {
           benchmark is <span className="font-semibold text-(--ink)">under 0.5</span>.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
-          {me ? (
-            <Button asChild className="h-10 rounded-full bg-(--ink) px-5 text-sm font-medium hover:bg-(--ink-soft)">
-              <Link to="/new-post">New post</Link>
-            </Button>
-          ) : (
-            <Button asChild className="h-10 rounded-full bg-(--ink) px-5 text-sm font-medium hover:bg-(--ink-soft)">
-              <Link to="/sign-up">Get started</Link>
-            </Button>
-          )}
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 rounded-full border-(--line) bg-(--card) px-5 text-sm font-medium text-(--ink) hover:bg-(--bg-subtle)"
-          >
+          <Button asChild size="pill">
+            <Link to={me ? '/new-post' : '/sign-up'}>
+              {me ? 'New post' : 'Get started'}
+            </Link>
+          </Button>
+          <Button asChild size="pill" variant="outline">
             <Link to="/me">My history</Link>
           </Button>
         </div>
@@ -97,19 +89,15 @@ function EmptyFeed({ isAuthed }: Readonly<{ isAuthed: boolean }>) {
       </p>
       <div className="mt-6 flex justify-center gap-2">
         {isAuthed ? (
-          <Button asChild className="h-10 rounded-full bg-(--ink) px-5 text-sm">
+          <Button asChild size="pill">
             <Link to="/new-post">New post</Link>
           </Button>
         ) : (
           <>
-            <Button
-              asChild
-              variant="outline"
-              className="h-10 rounded-full border-(--line) bg-(--card) px-5 text-sm"
-            >
+            <Button asChild size="pill" variant="outline">
               <Link to="/sign-in">Sign in</Link>
             </Button>
-            <Button asChild className="h-10 rounded-full bg-(--ink) px-5 text-sm">
+            <Button asChild size="pill">
               <Link to="/sign-up">Sign up</Link>
             </Button>
           </>

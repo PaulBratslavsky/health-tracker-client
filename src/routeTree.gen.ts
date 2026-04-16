@@ -19,6 +19,7 @@ import { Route as FastRouteImport } from './routes/fast'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostDocumentIdRouteImport } from './routes/post.$documentId'
+import { Route as LearnVideoIdRouteImport } from './routes/learn.$videoId'
 
 const UpgradeRoute = UpgradeRouteImport.update({
   id: '/upgrade',
@@ -70,6 +71,11 @@ const PostDocumentIdRoute = PostDocumentIdRouteImport.update({
   path: '/post/$documentId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnVideoIdRoute = LearnVideoIdRouteImport.update({
+  id: '/learn/$videoId',
+  path: '/learn/$videoId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/upgrade': typeof UpgradeRoute
+  '/learn/$videoId': typeof LearnVideoIdRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/upgrade': typeof UpgradeRoute
+  '/learn/$videoId': typeof LearnVideoIdRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/upgrade': typeof UpgradeRoute
+  '/learn/$videoId': typeof LearnVideoIdRoute
   '/post/$documentId': typeof PostDocumentIdRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/upgrade'
+    | '/learn/$videoId'
     | '/post/$documentId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/upgrade'
+    | '/learn/$videoId'
     | '/post/$documentId'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/upgrade'
+    | '/learn/$videoId'
     | '/post/$documentId'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   UpgradeRoute: typeof UpgradeRoute
+  LearnVideoIdRoute: typeof LearnVideoIdRoute
   PostDocumentIdRoute: typeof PostDocumentIdRoute
 }
 
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostDocumentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn/$videoId': {
+      id: '/learn/$videoId'
+      path: '/learn/$videoId'
+      fullPath: '/learn/$videoId'
+      preLoaderRoute: typeof LearnVideoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   UpgradeRoute: UpgradeRoute,
+  LearnVideoIdRoute: LearnVideoIdRoute,
   PostDocumentIdRoute: PostDocumentIdRoute,
 }
 export const routeTree = rootRouteImport

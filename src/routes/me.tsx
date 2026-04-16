@@ -140,24 +140,13 @@ function MyHistoryPage() {
             </p>
           </div>
           <div className="flex flex-shrink-0 flex-wrap gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setEditing((v) => !v)}
-              className="h-9 rounded-full border-[var(--line)] bg-[var(--card)] px-4 text-[13px] hover:bg-[var(--bg-subtle)]"
-            >
+            <Button size="pill-sm" variant="outline" onClick={() => setEditing((v) => !v)}>
               {editing ? 'Close' : 'Edit profile'}
             </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-9 rounded-full border-[var(--line)] bg-[var(--card)] px-4 text-[13px] hover:bg-[var(--bg-subtle)]"
-            >
+            <Button asChild size="pill-sm" variant="outline">
               <Link to="/fast">Fast</Link>
             </Button>
-            <Button
-              asChild
-              className="h-9 rounded-full bg-[var(--ink)] px-4 text-[13px] hover:bg-[var(--ink-soft)]"
-            >
+            <Button asChild size="pill-sm">
               <Link to="/new-post">New check-in</Link>
             </Button>
           </div>
@@ -201,7 +190,7 @@ function MyHistoryPage() {
                 onClick={() => setChartTab(tab)}
                 className={`rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition ${
                   chartTab === tab
-                    ? 'bg-[var(--ink)] text-white'
+                    ? 'bg-[var(--ink)] text-[var(--cream)]'
                     : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
                 }`}
               >

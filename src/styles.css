@@ -191,14 +191,21 @@ body {
   }
 }
 
-a {
-  color: var(--accent);
-  text-decoration: none;
-}
+/* Prose-style anchor defaults. Must live in `@layer base` so Tailwind's
+   utility classes (which live in `@layer utilities`, ordered later) win over
+   these defaults. Without the layer wrapper, unlayered CSS always beats
+   layered utilities regardless of specificity, and Button variants like
+   `text-primary-foreground` can't override the anchor color. */
+@layer base {
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
 
-a:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 }
 
 code {

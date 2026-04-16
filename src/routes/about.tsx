@@ -58,17 +58,10 @@ function About() {
       </section>
 
       <div className="mt-20 flex flex-wrap gap-3">
-        <Button
-          asChild
-          className="h-11 rounded-full bg-[var(--ink)] px-6 text-sm font-medium hover:bg-[var(--ink-soft)]"
-        >
+        <Button asChild size="pill-lg">
           <Link to="/sign-up">Get started</Link>
         </Button>
-        <Button
-          asChild
-          variant="outline"
-          className="h-11 rounded-full border-[var(--line)] bg-[var(--card)] px-6 text-sm font-medium text-[var(--ink)] hover:bg-[var(--bg-subtle)]"
-        >
+        <Button asChild size="pill-lg" variant="outline">
           <Link to="/feed">See the feed</Link>
         </Button>
       </div>

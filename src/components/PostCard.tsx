@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { DeletePostDialog } from '#/components/DeletePostDialog';
 import { ReportDialog } from '#/components/ReportDialog';
@@ -82,6 +83,31 @@ function CardHeaderRow({
       {context?.isOwnPost && isInReview && (
         <span className="inline-flex items-center rounded-md bg-[var(--band-yellow-bg)] px-2 py-0.5 text-[0.65rem] font-medium text-[var(--band-yellow-text)]">
           In review
+        </span>
+      )}
+      {post.type === 'youtube' && post.youtubeVideoId && (
+        <span className="group relative inline-flex">
+          <Link
+            to="/learn/$videoId"
+            params={{ videoId: post.youtubeVideoId }}
+            aria-label="Show key learning — AI-generated summary and action steps"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-[var(--ink-muted)] transition hover:bg-[var(--bg-subtle)] hover:text-[var(--ink)]"
+          >
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M8 1a5 5 0 0 0-3 9v1.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5V10a5 5 0 0 0-3-9zm-2 13.5V13h4v1.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5z"
+              />
+            </svg>
+          </Link>
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute right-0 top-full z-20 mt-2 w-56 rounded-lg border border-[var(--line)] bg-[var(--card)] px-3 py-2 text-[0.7rem] leading-snug text-[var(--ink-soft)] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+          >
+            <strong className="font-semibold text-[var(--ink)]">Show key learning</strong>
+            <br />
+            Opens an AI-generated summary with timestamped walkthrough and a plan of action steps.
+          </span>
         </span>
       )}
     </header>

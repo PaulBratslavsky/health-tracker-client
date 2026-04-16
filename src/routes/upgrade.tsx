@@ -36,11 +36,7 @@ function UpgradePage() {
           >
             Email me when Pro launches
           </a>
-          <Button
-            asChild
-            variant="outline"
-            className="h-10 rounded-full border-[var(--line)] bg-[var(--card)] px-5 text-sm"
-          >
+          <Button asChild size="pill" variant="outline">
             <Link to="/feed">Back to feed</Link>
           </Button>
         </div>
